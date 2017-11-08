@@ -54,10 +54,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Abstract\IEFContext.cs" />
-    <Compile Include="Entities\AppContext.cs" />
+    <Compile Include="Entities\AppDBContext.cs" />
     <Compile Include="Entities\AppRole.cs" />
     <Compile Include="Entities\AppUser.cs" />
     <Compile Include="Entities\DBIitializer.cs" />
+    <Compile Include="Interfaces\IAppDBContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

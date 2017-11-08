@@ -9,18 +9,20 @@ using System.Data.Entity;
 
 namespace DAL.Entities
 {
-    public class AppContext : IdentityDbContext<AppUser>,IEFContext
+    public class AppDBContext : IdentityDbContext<AppUser>,IEFContext
     {
-        public AppContext() : base("IdentityDb") { }
+        public AppDBContext() : base("IdentityDb") { }
 
-        public static AppContext Create()
+        public AppDBContext(string connString)
+            : base(connString)
         {
-            return new AppContext();
+            Database.SetInitializer<AppDBContext>(new DBIitializer());
         }
 
         public new IDbSet<TEntity> Set<TEntity>() where TEntity : class
         {
             return base.Set<TEntity>();
         }
+        //public DbSet<UserProfile> UserProfiles { get; set; }
     }
 }

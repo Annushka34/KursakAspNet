@@ -1,9 +1,7 @@
-﻿@using KursakAspNet3.Models
-@model LoginViewModel
+﻿@model BLL.ViewModels.Identity.LoginViewModel
 @{
     ViewBag.Title = "Log in";
 }
-
 <h2>@ViewBag.Title.</h2>
 <div class="row">
     <div class="col-md-8">
@@ -53,11 +51,10 @@
     </div>
     <div class="col-md-4">
         <section id="socialLoginForm">
-            @Html.Partial("_ExternalLoginsListPartial", new ExternalLoginListViewModel { ReturnUrl = ViewBag.ReturnUrl })
+            @Html.Partial("_ExternalLoginsListPartial", new BLL.ViewModels.Identity.ExternalLoginListViewModel { ReturnUrl = ViewBag.ReturnUrl })
         </section>
     </div>
 </div>
-
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }

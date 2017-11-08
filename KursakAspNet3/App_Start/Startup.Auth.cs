@@ -1,40 +1,55 @@
-﻿using System;
+﻿using Autofac;
+//using Autofac.Integration.Mvc;
+using BLL.Infrastructure.Identity.Service;
+using BLL.Infrastructure.Identity;
 using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
-using Microsoft.Owin.Security.Cookies;
-using Microsoft.Owin.Security.Google;
+using Microsoft.Owin.Security;
+using Microsoft.Owin.Security.DataProtection;
+using Microsoft.Owin.Security.Facebook;
 using Owin;
-using KursakAspNet3.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Web;
+using System.Web.Mvc;
+using KursakAspNet3;
+using Autofac.Integration.Mvc;
+
+[assembly: OwinStartup(typeof(KursakAspNet3.Startup))]
 
 namespace KursakAspNet3
 {
-    public partial class Startup
+    public class Startup
     {
-        // For more information on configuring authentication, please visit https://go.microsoft.com/fwlink/?LinkId=301864
-        public void ConfigureAuth(IAppBuilder app)
+
+        public void Configuration(IAppBuilder app)
         {
-            // Configure the db context, user manager and signin manager to use a single instance per request
-            app.CreatePerOwinContext(ApplicationDbContext.Create);
-            app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
-            app.CreatePerOwinContext<ApplicationSignInManager>(ApplicationSignInManager.Create);
+            var builder = new ContainerBuilder();
+
+            builder.RegisterModule(new DataModule("IdentityDb", app));
+
+            // REGISTER CONTROLLERS SO DEPENDENCIES ARE CONSTRUCTOR INJECTED
+
+            builder.RegisterControllers(typeof(MvcApplication).Assembly);
+
+            // BUILD THE CONTAINER
+            var container = builder.Build();
+
+            // REPLACE THE MVC DEPENDENCY RESOLVER WITH AUTOFAC
+            DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
+
+            // REGISTER WITH OWIN
+            app.UseAutofacMiddleware(container);
+            app.UseAutofacMvc();
+
+            //Configuration(app);
 
             // Enable the application to use a cookie to store information for the signed in user
             // and to use a cookie to temporarily store information about a user logging in with a third party login provider
             // Configure the sign in cookie
-            app.UseCookieAuthentication(new CookieAuthenticationOptions
-            {
-                AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
-                LoginPath = new PathString("/Account/Login"),
-                Provider = new CookieAuthenticationProvider
-                {
-                    // Enables the application to validate the security stamp when the user logs in.
-                    // This is a security feature which is used when you change a password or add an external login to your account.  
-                    OnValidateIdentity = SecurityStampValidator.OnValidateIdentity<ApplicationUserManager, ApplicationUser>(
-                        validateInterval: TimeSpan.FromMinutes(30),
-                        regenerateIdentity: (manager, user) => user.GenerateUserIdentityAsync(manager))
-                }
-            });            
+            app.UseCookieAuthentication(MyOptions.OptionCookies());
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
 
             // Enables the application to temporarily store user information when they are verifying the second factor in the two-factor authentication process.
@@ -54,9 +69,47 @@ namespace KursakAspNet3
             //   consumerKey: "",
             //   consumerSecret: "");
 
-            //app.UseFacebookAuthentication(
-            //   appId: "",
-            //   appSecret: "");
+
+            app.UseFacebookAuthentication(new FacebookAuthenticationOptions()
+            {
+                AppId = "1991172914492732",
+                AppSecret = "00f559d9093d1a7c106b828d9b9715c9",
+                BackchannelHttpHandler = new HttpClientHandler(),
+                UserInformationEndpoint = "https://graph.facebook.com/v2.8/me?fields=id,name,email,first_name,last_name,birthday",
+                //Scope = { "email" },
+                Provider = new FacebookAuthenticationProvider()
+                {
+                    OnAuthenticated = async context =>
+                    {
+                        context.Identity.AddClaim(new System.Security.Claims.Claim("FacebookAccessToken", context.AccessToken));
+                        foreach (var claim in context.User)
+                        {
+                            var claimType = string.Format("urn:facebook:{0}", claim.Key);
+                            string claimValue = claim.Value.ToString();
+                            if (!context.Identity.HasClaim(claimType, claimValue))
+                                context.Identity.AddClaim(new System.Security.Claims.Claim(claimType, claimValue, "XmlSchemaString", "Facebook"));
+                        }
+                    }
+                }
+            });
+
+            //var facebookOptions = new FacebookAuthenticationOptions()
+            //{
+            //    AppId = "1991172914492732",
+            //    AppSecret = "00f559d9093d1a7c106b828d9b9715c9"
+            //};
+
+            //facebookOptions.Scope.Add("email");
+
+            //facebookOptions.Fields.Add("name");
+            //facebookOptions.Fields.Add("email");
+            //facebookOptions.Fields.Add("first_name");
+            //facebookOptions.Fields.Add("last_name");
+            //facebookOptions.Fields.Add("birthday");
+
+            //app.UseFacebookAuthentication(facebookOptions);
+
+
 
             //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
             //{
