@@ -17,7 +17,7 @@ namespace BLL.Infrastructure.Identity.Service
         public static UserService Create(IdentityFactoryOptions<UserService> options,
             IOwinContext context)
         {
-            var service = new UserService(new UserStore<AppUser>(context.Get<DAL.Entities.AppDBContext>()));
+            var service = new UserService(new UserStore<AppUser>(context.Get<AppDBContext>()));
 
             service.UserValidator = new UserValidator<AppUser>(service)
             {

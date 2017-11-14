@@ -14,25 +14,24 @@ namespace BLL.Concrete
 {
     public class AccountProvider:IAccountProvider
     {
-        private SignInService _signInManager;
-        private UserService _userManager;
+        private readonly SignInService _signInManager;
+        private readonly UserService _userManager;
         private readonly IAuthenticationManager _authManager;
 
-        //public AccountProvider(IUserRepository userRepository)
-        //{
-
-        //    //_userRepository = userRepository;
-        //}
+        public AccountProvider(UserService userManager,
+           SignInService signInManager,
+           IAuthenticationManager authManager)
+        {
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _authManager = authManager;
+        }
 
         public SignInService SignInManager
         {
             get
             {
                 return _signInManager ?? HttpContext.Current.GetOwinContext().Get<SignInService>();
-            }
-            private set
-            {
-                _signInManager = value;
             }
         }
 
@@ -42,16 +41,12 @@ namespace BLL.Concrete
             {
                 return _userManager ?? HttpContext.Current.GetOwinContext().Get<UserService>();
             }
-            private set
-            {
-                _userManager = value;
-            }
         }
         private IAuthenticationManager AuthenticationManager
         {
             get
             {
-                return HttpContext.Current.GetOwinContext().Authentication;
+                return _authManager;
             }
         }
 
@@ -65,6 +60,12 @@ namespace BLL.Concrete
                     return StatusAccountViewModel.Success;
             }
             return StatusAccountViewModel.Error;
+        }
+        public async Task<SignInStatus> LoginAsync(LoginViewModel model)
+        {
+            var result = await SignInManager
+                .PasswordSignInAsync(model.Email, model.Password, model.IsRememberMe, shouldLockout: false);
+            return result;
         }
 
         public void Logout()
@@ -88,23 +89,32 @@ namespace BLL.Concrete
             return result;
         }
 
-        public IEnumerable<string> UserRoles(string email)
-        {
-            throw new NotImplementedException();
-            //var user= _userRepository.GetUserByEmail(email);
-            //return user.Roles.Select(r=>r.Name);
-        }
-
         public async Task<ExternalLoginInfo> GetExternalLoginInfoAsync()
         {
             return await _authManager.GetExternalLoginInfoAsync();
         }
 
         public async Task<SignInStatus> ExternalSignInAsync(ExternalLoginInfo loginInfo)
+
         {
             return await _signInManager.ExternalSignInAsync(loginInfo, isPersistent: false);
         }
 
+        public async Task<SignInStatus> ExternalSignInAsyncFacebook(ExternalLoginInfo loginInfo)
 
+        {
+            var user = new AppUser { UserName = loginInfo.Email, Email = loginInfo.Email };
+            var result = await UserManager.CreateAsync(user);
+            if (result.Succeeded)
+            {
+                result = await UserManager.AddLoginAsync(user.Id, loginInfo.Login);
+                if (result.Succeeded)
+                {
+                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                    return await _signInManager.ExternalSignInAsync(loginInfo, isPersistent: false);
+                }
+            }
+            return await _signInManager.ExternalSignInAsync(loginInfo, isPersistent: false);
+        }
     }
 }

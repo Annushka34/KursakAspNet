@@ -2,6 +2,7 @@
 using BLL.Concrete;
 using BLL.Infrastructure.Identity.Service;
 using DAL.Abstract;
+using DAL.Concrete;
 using DAL.Entities;
 using DAL.Interfaces;
 using Microsoft.AspNet.Identity;
@@ -29,7 +30,7 @@ namespace BLL.Infrastructure.Identity
         }
         protected override void Load(ContainerBuilder builder)
         {
-            builder.Register(c => new DAL.Entities.AppDBContext(this._connStr)).As<IAppDBContext>().InstancePerRequest();
+            builder.Register(c => new AppDBContext(this._connStr)).As<IAppDBContext>().InstancePerRequest();
             builder.Register(ctx =>
             {
                 var context = (AppDBContext)ctx.Resolve<IAppDBContext>();
@@ -43,8 +44,8 @@ namespace BLL.Infrastructure.Identity
             builder.Register<IDataProtectionProvider>(c => _app.GetDataProtectionProvider()).InstancePerRequest();
             builder.RegisterType<AccountProvider>().AsSelf().InstancePerRequest();
 
-            //builder.RegisterType<SqlRepository>().As<ISqlRepository>().InstancePerRequest();
-            //builder.RegisterType<UserRepository>().As<IUserRepository>().InstancePerRequest();
+            builder.RegisterType<SqlRepository>().As<ISqlRepository>().InstancePerRequest();
+            builder.RegisterType<UserRepository>().As<IUserRepository>().InstancePerRequest();
             base.Load(builder);
         }
     }

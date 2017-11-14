@@ -44,7 +44,7 @@ namespace WebLayer.Controllers
 
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
-            var result = await _accountProvider.Login(model);
+            var result = await _accountProvider.LoginAsync(model);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -197,6 +197,42 @@ namespace WebLayer.Controllers
                 return Redirect(returnUrl);
             }
             return RedirectToAction("Index", "Home");
+        }
+
+        // POST: /Account/ExternalLoginConfirmation
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl)
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Manage");
+            }
+
+            if (ModelState.IsValid)
+            {
+                // Get the information about the user from the external login provider
+                var info = await _accountProvider.GetExternalLoginInfoAsync();
+                if (info == null)
+                {
+                    return View("ExternalLoginFailure");
+                }
+
+                //var user = new AppUser { UserName = model.Email, Email = model.Email };
+                //var result = await UserManager.CreateAsync(user);
+                //if (result.Succeeded)
+                //{
+                var result = await _accountProvider.ExternalSignInAsyncFacebook(info);
+                //if (result == SignInStatus.Failure)
+                //{
+                //    IdentityResult res =new IdentityResult( "Failed" );
+                //    AddErrors(res);
+                //}
+            }
+
+            ViewBag.ReturnUrl = returnUrl;
+            return RedirectToLocal(returnUrl);
         }
     }
 }

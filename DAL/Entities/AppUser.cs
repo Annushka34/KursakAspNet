@@ -11,7 +11,7 @@ namespace DAL.Entities
 {
     public class AppUser : IdentityUser
     {
-        public string PhotoPath { get; set; }
+        public virtual User User { get; set; }
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<AppUser> manager)
         {
             var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);

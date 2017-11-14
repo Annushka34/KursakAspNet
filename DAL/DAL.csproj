@@ -54,11 +54,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Abstract\IEFContext.cs" />
+    <Compile Include="Abstract\ISqlRepository.cs" />
+    <Compile Include="Abstract\IUserRepository.cs" />
+    <Compile Include="Concrete\SqlRepository.cs" />
+    <Compile Include="Concrete\UserRepository.cs" />
     <Compile Include="Entities\AppDBContext.cs" />
     <Compile Include="Entities\AppRole.cs" />
     <Compile Include="Entities\AppUser.cs" />
+    <Compile Include="Entities\BaseModel.cs" />
     <Compile Include="Entities\DBIitializer.cs" />
-    <Compile Include="Interfaces\IAppDBContext.cs" />
+    <Compile Include="Entities\User.cs" />
+    <Compile Include="Abstract\IAppDBContext.cs" />
+    <Compile Include="Migrations\201711091349476_add user.cs" />
+    <Compile Include="Migrations\201711091349476_add user.Designer.cs">
+      <DependentUpon>201711091349476_add user.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -66,8 +77,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Concrete\" />
-    <Folder Include="Migrations\" />
+    <EmbeddedResource Include="Migrations\201711091349476_add user.resx">
+      <DependentUpon>201711091349476_add user.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

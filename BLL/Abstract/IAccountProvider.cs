@@ -1,6 +1,7 @@
 ﻿using BLL.Infrastructure.Identity.Service;
 using BLL.ViewModel;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using System;
 using System.Collections.Generic;
@@ -13,8 +14,12 @@ namespace BLL.Abstract
     public interface IAccountProvider
     {
         StatusAccountViewModel Login(LoginViewModel model);
+        Task<SignInStatus> LoginAsync(LoginViewModel model);
         void Logout();
         Task<IdentityResult> Register(RegisterViewModel model);
-        IEnumerable<string> UserRoles(string email);
+
+        Task<ExternalLoginInfo> GetExternalLoginInfoAsync();
+        Task<SignInStatus> ExternalSignInAsync(ExternalLoginInfo loginInfo);
+      
     }
 }

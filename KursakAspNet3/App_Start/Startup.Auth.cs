@@ -72,8 +72,8 @@ namespace KursakAspNet3
 
             app.UseFacebookAuthentication(new FacebookAuthenticationOptions()
             {
-                AppId = "1991172914492732",
-                AppSecret = "00f559d9093d1a7c106b828d9b9715c9",
+                AppId = "1894249307559905",
+                AppSecret = "5d5c0a4ac1e15d9ea1f0e611453afef1",
                 BackchannelHttpHandler = new HttpClientHandler(),
                 UserInformationEndpoint = "https://graph.facebook.com/v2.8/me?fields=id,name,email,first_name,last_name,birthday",
                 //Scope = { "email" },

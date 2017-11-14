@@ -1,5 +1,5 @@
-﻿using BLL.Services;
-using BLL.Services.Identity;
+﻿using BLL.Infrastructure.Identity.Service;
+using BLL.Infrastructure.Identity;
 using Microsoft.Owin.Security;
 using System;
 using System.Collections.Generic;
@@ -7,22 +7,22 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace WebLayer.Controllers
+namespace KursakAspNet3.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly AppUserManager _userManager;
-        private readonly AppSignInManager _signInManager;
+        private readonly UserService _userManager;
+        private readonly SignInService _signInManager;
         private readonly IAuthenticationManager _authManager;
 
-        public HomeController(AppUserManager userManager, AppSignInManager signInManager, IAuthenticationManager authManager)
+        public HomeController(UserService userManager, SignInService signInManager, IAuthenticationManager authManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _authManager = authManager;
         }
 
-        public AppSignInManager SignInManager
+        public SignInService SignInManager
         {
             get
             {
@@ -30,7 +30,7 @@ namespace WebLayer.Controllers
             }
         }
 
-        public AppUserManager UserManager
+        public UserService UserManager
         {
             get
             {

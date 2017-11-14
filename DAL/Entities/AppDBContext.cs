@@ -6,10 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.Entity;
+using DAL.Interfaces;
 
 namespace DAL.Entities
 {
-    public class AppDBContext : IdentityDbContext<AppUser>,IEFContext
+    public class AppDBContext : IdentityDbContext<AppUser>,IAppDBContext
     {
         public AppDBContext() : base("IdentityDb") { }
 

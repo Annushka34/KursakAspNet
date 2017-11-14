@@ -17,7 +17,7 @@ namespace BLL.Infrastructure.Identity.Service
 
         public static RoleService Create(IdentityFactoryOptions<RoleService> options, IOwinContext context)
         {
-            return new RoleService(new RoleStore<AppRole>(context.Get<DAL.Entities.AppDBContext>()));
+            return new RoleService(new RoleStore<AppRole>(context.Get<AppDBContext>()));
         }
     }
 }
