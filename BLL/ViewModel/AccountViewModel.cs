@@ -69,6 +69,7 @@ namespace BLL.ViewModel
         [Required]
         [Display(Name = "Прізвище")]
         public string LastName { get; set; }
+        [Display(Name = "Зображення")]
         public string Image { get; set; }
 
         [Required]

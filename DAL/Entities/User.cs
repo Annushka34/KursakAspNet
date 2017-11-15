@@ -18,7 +18,7 @@ namespace DAL.Entities
         public string FirstName { get; set; }
         [StringLength(maximumLength: 256)]
         public string LastName { get; set; }
-        [StringLength(maximumLength: 256)]
+        [StringLength(maximumLength: 600)]
         public string Image { get; set; }
     }
 }

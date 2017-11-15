@@ -1,6 +1,8 @@
 ﻿using BLL.Abstract;
 using BLL.Infrastructure.Identity.Service;
 using BLL.ViewModel;
+using DAL.Abstract;
+using DAL.Concrete;
 using DAL.Entities;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
@@ -17,14 +19,17 @@ namespace BLL.Concrete
         private readonly SignInService _signInManager;
         private readonly UserService _userManager;
         private readonly IAuthenticationManager _authManager;
+        private readonly IUserRepository _userRepository;
+
 
         public AccountProvider(UserService userManager,
            SignInService signInManager,
-           IAuthenticationManager authManager)
+           IAuthenticationManager authManager, IUserRepository userRepository)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _authManager = authManager;
+            _userRepository = userRepository;
         }
 
         public SignInService SignInManager
@@ -81,9 +86,18 @@ namespace BLL.Concrete
                 UserName = model.Email,
                 Email = model.Email
             };
+            var userProfile = new User
+            {
+                AppUserOf = user,
+                FirstName=model.FirstName,
+                LastName=model.LastName,
+                Image = model.Image
+            };
+            
             var result = await UserManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
+                _userRepository.Add(userProfile);
                 await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
             }
             return result;

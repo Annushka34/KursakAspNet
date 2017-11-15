@@ -48,7 +48,8 @@
         </div>
         <div class="col-md-12">
             <div>
-                <input type="file" class="filestyle defaults inputImage" data-icon="false">
+                @Html.TextBoxFor(m=>m.Image, new { @type="file",@class= "filestyle defaults inputImage"})
+                @*<input type="file" class="filestyle defaults inputImage" data-icon="false">*@
             </div>
             </div>
     </div>
@@ -58,6 +59,7 @@
         </div>
     </div>
 }
+@Html.Partial("_Default1366cropper")
 
 @section styles {
     @*cropper*@
