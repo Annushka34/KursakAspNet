@@ -1,22 +1,27 @@
 ﻿@using Microsoft.AspNet.Identity
+
 @if (Request.IsAuthenticated)
 {
-    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+    // using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new {id = "logoutForm"}))
     {
         @Html.AntiForgeryToken()
 
-        <ul class="nav navbar-nav navbar-right">
-            <li>
-                @Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })
-            </li>
-            <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+        <ul class="icons">
+            <li> @Html.ActionLink("Вітаємо  " + User.Identity.GetUserName() + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })</li>
+            <li> @Html.ActionLink("Вихід", "LogOff", "Account", routeValues: null, htmlAttributes: new { id = "logoutForm" })</li>
+
+           @*// <li><a href="javascript:document.getElementById('logoutForm').submit()">lll</a></li>*@
         </ul>
     }
 }
 else
 {
-    <ul class="nav navbar-nav navbar-right">
-        <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
-        <li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
+    <ul class="icons">
+
+        <li><a href="/Account/_ExternalLoginsListPartial"  class="icon fa-facebook"><span class="label">Facebook</span></a></li>
+
+        <li><button>@Html.ActionLink("Власний кабінет", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</button></li>
+
+        <li>@Html.ActionLink("Новий користувач", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink"})</li>
     </ul>
 }

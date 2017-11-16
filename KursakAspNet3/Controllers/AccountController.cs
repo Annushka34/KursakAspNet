@@ -65,8 +65,9 @@ namespace WebLayer.Controllers
         }
 
         // POST: /Account/LogOff
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        //[HttpPost]
+        [AllowAnonymous]
+        //[ValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
             _accountProvider.Logout();
